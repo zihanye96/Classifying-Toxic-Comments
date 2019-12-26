@@ -1,6 +1,20 @@
-# Introduction
+# Classification of Toxic Wikipedia Comments
+The goal of this project is to create a classifier that identifies whether or not a comment is toxic. The dataset used in this project contains Wikipedia comments which have been labeled by human raters for toxicity. To do this, I created 11 intuitive features used for modelling and constructed various classification models (Naive Bayes, Pruned Classification Tree, Random Forest, Logistic Regression, Neural Network, and Support Vector Machines). In the end, I selected a model using sensitivity and balanced accuracy as criteria, and the model was able to correctly classify toxic comments over 93% of the time.
 
-The computer-automated identification of inappropriately toxic comments, which may contain expletives, offensive language, and/or group-targeted hate, is critical in a larger sociocultural battle against youth exposure to inappropriate language and against group-directed prejudice and discrimination. Here, we use the text of thousands of toxic-or-not designated online comments in order to generate, train, and test a computational model to predict whether or not a given comment is toxic. We began with a naive Bayes approach to obtain a list of 500 of the most toxicdetermining words among the comments; the construction of such a dictionary enabled toxicity prediction (accuracy, 0.8285; sensitivity, 0.7837; specificity, 0.8337). After the creation of 11 intuitive features, we turned to more automated forms of toxicity classification, including simple logistic regression (accuracy, 0.9295; sensitivity, 0.9950; specificity, 0.3654), pruned classification tree (accuracy, 0.9265; sensitivity, 0.9978; specificity, 0.3125), random forest (accuracy, 0.9315; sensitivity, 0.9972; specificity, 0.3654), neural network (accuracy, 0.9315; sensitivity, 0.9955; specificity, 0.3798), and a support vector machine with linear (accuracy, 0.9265; sensitivity, 0.9950; specificity, 0.3365), polynomial (accuracy, 0.9240; sensitivity, 0.9983; specificity, 0.2837), and radial (accuracy, 0.8960; sensitivity, 1.0000; specificity, 0.0000) kernel. Because we wanted to be more cautious than not in our comment toxicity classification, we chose in all models to maximize sensitivity. Comparison of model performance with regard to balanced accuracy, specificity, and sensitivity as well as simple measures of model diagnostics led to the selection of neural network as the best model.
+
+## Introduction
+
+The computer-automated identification of inappropriately toxic comments, which may contain expletives, offensive language, and/or group-targeted hate, is critical in a larger sociocultural battle against youth exposure to inappropriate language and against group-directed prejudice and discrimination. Here, we use the text of thousands of toxic-or-not designated online comments in order to generate, train, and test a computational model to predict whether or not a given comment is toxic. We began with a naive Bayes approach to obtain a list of 500 of the most toxic-determining words among the comments; the construction of such a dictionary enabled toxicity prediction (accuracy, 0.8285; sensitivity, 0.7837; specificity, 0.8337). After the creation of 11 intuitive features, we turned to more automated forms of toxicity classification, including:
+  
+    1. Logistic regression (accuracy, 0.9295; sensitivity, 0.9950; specificity, 0.3654)
+    2. Pruned classification tree (accuracy, 0.9265; sensitivity, 0.9978; specificity, 0.3125)
+    3. Random forest (accuracy, 0.9315; sensitivity, 0.9972; specificity, 0.3654)
+    4. Neural network (accuracy, 0.9315; sensitivity, 0.9955; specificity, 0.3798)
+    5. Support Vector Machine with Linear Kernel (accuracy, 0.9265; sensitivity, 0.9950; specificity, 0.3365)
+    6. Support Vector Machine with Polynomial Kernel (accuracy, 0.9240; sensitivity, 0.9983; specificity, 0.2837)
+    7. Support Vector Machine with Radial Kernel (accuracy, 0.8960; sensitivity, 1.0000; specificity, 0.0000)
+
+Because we wanted to be more cautious than not in our comment toxicity classification, we chose in all models to maximize sensitivity. Comparison of model performance with regard to balanced accuracy, specificity, and sensitivity as well as simple measures of model diagnostics led to the selection of the neural network as the "best" model.
 
 ## Method
  
@@ -23,8 +37,8 @@ Although the dataset contains varying levels of toxicity (toxic, severe toxic, o
 10. Curse: whether or not a word from our list of “curse” words or any word containing a word from our list of curse words is present in a comment. See the list below.
 11. Nice: whether or not a word from our list of “nice” words or any word containing a word from our list of curse words is present in a comment. See the list below.
 For the last two features, the words in our lists were chosen through a combination of examining comments, brainstorming, and trial and error. We looked at the proportion of toxic comments that contained those words and the proportion of nontoxic comments that contained those words and chose the words where there was a significant difference in appearance between the two types of comments. Here are the lists we came up with (please note that these words are written here solely to explain our methods, not to endorse any offensive meaning they imply):
-Curse: fuck, f*ck, shit, cock, gay, sex, fag, ass, bitch, dick, arse, christ, cunt, lol, haha
-Nice: please, thank, apolog, welcome, hello, interest, great, agree, there
+- Curse: fuck, f*ck, shit, cock, gay, sex, fag, ass, bitch, dick, arse, christ, cunt, lol, haha
+- Nice: please, thank, apolog, welcome, hello, interest, great, agree, there
 
 ### Modelling
 
