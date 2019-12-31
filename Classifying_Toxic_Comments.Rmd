@@ -1,6 +1,6 @@
 ---
 title: "STAT 442 Project #2: Classification of Toxic Comments"
-author: "Calvin Ludwig ???18 & Zihan Ye ???18"
+author: "Calvin Ludwig & Zihan Ye"
 date: \today
 output: 
   pdf_document:
@@ -23,34 +23,34 @@ require(stringr)
 
 
 ```{r, tidy = TRUE}
-#Length of a comment in terms of the number of characters
+## Length of a comment in terms of the number of characters
 dat$n = nchar(dat$comment_text) 
 boxplot(n ~ toxic, data = dat)
 
-#Number of punctuation characters used in comment
+## Number of punctuation characters used in comment
 punctDat = dat %>% mutate(n = str_count(comment_text,"[:punct:]")) %>% group_by(id) %>% summarize(puncN = sum(n)) 
 dat = left_join(dat,punctDat)
 boxplot(puncN/n ~ toxic, data = dat)
 
-#Number of capital letters used in comment
+## Number of capital letters used in comment
 capDat = dat %>% mutate(n = str_count(comment_text,"[:upper:]")) %>% group_by(id) %>% summarize(capN = sum(n)) 
 dat = left_join(dat,capDat)
 boxplot(capN/n ~ toxic, data = dat)
 
-# Proportion of capitals
+## Proportion of capitals
 dat$propC = dat$capN / dat$n > 0.4
 prop.table(table(dat$propC, dat$toxic),2)
 
-#Number of numeric digits used in comment
+## Number of numeric digits used in comment
 numDat = dat %>% mutate(n = str_count(comment_text,"[0-9]")) %>% group_by(id) %>% summarize(numN = sum(n)) 
 dat = left_join(dat,numDat)
 boxplot(numN/n ~ toxic, data = dat)
 
-#Length of the longest word in comment
+## Length of the longest word in comment
 dat$maxWordLength = sapply(str_split(dat$comment_text,' ' ),function(s) max(nchar(s)))
 boxplot(maxWordLength ~ toxic, data = dat)
 
-#Presence/Absence of words in a comment
+## Presence/Absence of words in a comment
 dat$Fu = str_detect(tolower(dat$comment_text),'(.*)fuck(.*)')
 table(dat$Fu,dat$toxic)
 
@@ -63,40 +63,39 @@ prop.table(table(dat$you,dat$toxic),2)
 dat$excl = str_detect(tolower(dat$comment_text),"!!(.*)")
 prop.table(table(dat$excl,dat$toxic),2)
 
-# presence/absence of curse word
+## Presence/absence of curse word
 dat$curse = str_detect(tolower(dat$comment_text),"(.*)fuck(.*)") | str_detect(tolower(dat$comment_text),"(.*)fck(.*)") | str_detect(tolower(dat$comment_text),"(.*)f*ck(.*)") | str_detect(tolower(dat$comment_text),"(.*)shit(.*)") | str_detect(tolower(dat$comment_text),"(.*)cock(.*)") | str_detect(tolower(dat$comment_text),"gay(.*)") | str_detect(tolower(dat$comment_text),"(.*)sex(.*)") | str_detect(tolower(dat$comment_text),"(.*)fag(.*)") | str_detect(tolower(dat$comment_text),"(.*)ass(.*)") | str_detect(tolower(dat$comment_text),"(.*)bitch(.*)") | str_detect(tolower(dat$comment_text),"dick(.*)") | str_detect(tolower(dat$comment_text),"arse(.*)") | str_detect(tolower(dat$comment_text),"christ(.*)") | str_detect(tolower(dat$comment_text),"cunt(.*)") | str_detect(tolower(dat$comment_text),"lol(.*)")| str_detect(tolower(dat$comment_text),"haha(.*)")
+
 prop.table(table(dat$curse,dat$toxic),2)
 
 
-# presence/absence of ???good??? words
+## Presence/absence of "good" words
 dat$nice = str_detect(tolower(dat$comment_text),"please(.*)") | str_detect(tolower(dat$comment_text),"thank(.*)") | str_detect(tolower(dat$comment_text),"apolog(.*)") | str_detect(tolower(dat$comment_text),"welcome(.*)") | str_detect(tolower(dat$comment_text),"hello") | str_detect(tolower(dat$comment_text),"interest(.*)") | str_detect(tolower(dat$comment_text),"great(.*)") | str_detect(tolower(dat$comment_text),"agree(.*)") | str_detect(tolower(dat$comment_text),"there(.*)")
 prop.table(table(dat$nice,dat$toxic),2)
 
 dat$toxic = factor(make.names(dat$toxic))
 
-# Remove unhelpful features
 dat <- subset(dat,select=-c(capN))
 ```
 
 ## Logistic Regression
 
 ```{r, tidy = TRUE}
-trainingData = dat[1:5000,-c(1,2,4:8)] #create training data (toxic labels + features)
+trainingData = dat[1:5000,-c(1,2,4:8)] # create training data (toxic labels + features)
 testData = dat[5001:7000,]
 
-# switch between these two
 TrainingParameters <- trainControl(method = "repeatedcv", number = 5,classProbs = TRUE, summaryFunction = twoClassSummary)
 
 
-#GLM - Logistic Regression
+## GLM - Logistic Regression
 set.seed(100)
-mod1 = train(toxic ~ ., data = trainingData, metric = 'Sens', method = 'glm',trControl = TrainingParameters, preProcess = c('scale','center')) #Default is to optimize by Accuracy; could add metric = 'Spec' or 'Sens' or 'ROC' plus the commented out training parameters to optimize by specificity
+mod1 = train(toxic ~ ., data = trainingData, metric = 'Sens', method = 'glm',trControl = TrainingParameters, preProcess = c('scale','center')) 
 
-#Test Errors
+## Test Errors
 pred = predict(mod1,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(mod1))
 ```
 
@@ -108,22 +107,21 @@ Trying to maximize 'nodal purity', meaning nodes contain mostly toxic or mostly 
 
 ```{r, tidy = TRUE}
 set.seed(100)
-mod2 = train(toxic ~ ., data = trainingData, metric = 'Spec', method = 'rpart1SE',trControl = TrainingParameters) #add metric = 'Spec'
+mod2 = train(toxic ~ ., data = trainingData, metric = 'Spec', method = 'rpart1SE',trControl = TrainingParameters) 
 
-#Train Errors
+## Train Errors
 pred = predict(mod2,trainingData)
 confusionMatrix(pred, trainingData$toxic)
 
-#Test Errors
+## Test Errors
 pred = predict(mod2,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(mod2))
 
-#Plot the Classification Tree
-
-rpart.plot(mod2$finalModel) #We are trying to maximize node purity
+## Plot the Classification Tree
+rpart.plot(mod2$finalModel) # Note: we would like to maximize node purity
 ```
 
 
@@ -132,13 +130,13 @@ rpart.plot(mod2$finalModel) #We are trying to maximize node purity
 
 ```{r, tidy = TRUE}
 set.seed(100)
-mod3 = train(toxic ~ ., data = trainingData, metric = 'Spec', method = 'rf',trControl = TrainingParameters) #add metric = 'Spec'
+mod3 = train(toxic ~ ., data = trainingData, metric = 'Spec', method = 'rf',trControl = TrainingParameters) 
 
-#Test Errors
+## Test Errors
 pred = predict(mod3,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(mod3))
 ```
 
@@ -151,78 +149,77 @@ neural = train(toxic ~ ., data = trainingData, method = 'nnet',trControl = Train
 ```
 
 ```{r}
-#Test Errors
+## Test Errors
 pred = predict(neural,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(neural))
 ```
 
 ## Linear Kernel
 
 ```{r}
-#TrainingParameters <- trainControl(method = "cv", number = 5,classProbs = TRUE, summaryFunction = twoClassSummary)
 TrainingParameters <- trainControl(method = "cv", number = 5)
 
-#SVM - Linear Boundary
+## SVM - Linear Boundary
 set.seed(100)
 grid <- expand.grid(C = c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,5)) # giving R potential C parameter values
-mod5 = train(toxic ~ ., data = trainingData, method = 'svmLinear',trControl = TrainingParameters, tuneGrid = grid, tuneLength = 10, preProcess = c('scale','center')) #Default is to optimize by Accuracy; could add metric = 'Spec' or 'Sens' or 'ROC' plus the commented out training parameters to optimize by specificity
+mod5 = train(toxic ~ ., data = trainingData, method = 'svmLinear',trControl = TrainingParameters, tuneGrid = grid, tuneLength = 10, preProcess = c('scale','center')) 
 
 plot(mod5)
 
-#Test Errors
+## Test Errors
 pred = predict(mod5,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(mod5))
 ```
 
 ## Polynomial Kernel
 
 ```{r}
-#SVM - Polynomial Kernel
+## SVM - Polynomial Kernel
 set.seed(100)
-mod6 = train(toxic ~ ., data = trainingData, method = 'svmPoly',trControl = TrainingParameters, tuneLength = 3, preProcess = c('scale','center')) #Default is to optimize by Accuracy; could add metric = 'Spec' or 'Sens' or 'ROC' plus the commented out training parameters to optimize by specificity
+mod6 = train(toxic ~ ., data = trainingData, method = 'svmPoly',trControl = TrainingParameters, tuneLength = 3, preProcess = c('scale','center')) 
 
 plot(mod6)
 
-#Train Errors
+## Train Errors
 pred = predict(mod6,trainingData)
 confusionMatrix(pred, trainingData$toxic)
 
-#Test Errors
+## Test Errors
 pred = predict(mod6,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(mod6))
 ```
 
 ## Radial Kernel
 
 ```{r}
-#SVM - Radial Kernel (sigma is functioning as gamma)
+## SVM - Radial Kernel 
 grid_radial <- expand.grid(sigma = c(0,0.01, 0.02, 0.025, 0.03, 0.04,
  0.05, 0.06, 0.07,0.08, 0.09, 0.1, 0.25, 0.5, 0.75,0.9),
  C = c(0.01, 0.05, 0.1, 0.25, 0.5, 0.75,
  1, 1.5, 2,5))
 set.seed(100)
-mod7 = train(toxic ~ ., data = trainingData, method = 'svmRadial',trControl = TrainingParameters, tuneGrid = grid_radial,tuneLength = 10, preProcess = c('scale','center')) #Default is to optimize by Accuracy; could add metric = 'Spec' or 'Sens' or 'ROC' plus the commented out training parameters to optimize by specificity
+mod7 = train(toxic ~ ., data = trainingData, method = 'svmRadial',trControl = TrainingParameters, tuneGrid = grid_radial,tuneLength = 10, preProcess = c('scale','center')) 
 
 plot(mod7)
 
-#Train Errors
+## Train Errors
 pred = predict(mod7,trainingData)
 confusionMatrix(pred, trainingData$toxic)
 
-#Test Errors
+## Test Errors
 pred = predict(mod7,testData)
 confusionMatrix(pred, testData$toxic)
 
-#Variable Importance Measure
+## Variable Importance Measure
 plot(varImp(mod7))
 ```
 

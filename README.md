@@ -3,7 +3,6 @@ The goal of this project is to create a classifier that identifies whether or no
 
 
 
-
 ## Method
  
 ### Overview
@@ -55,6 +54,6 @@ Because we wanted to be more cautious than not in our comment toxicity classific
 
 As stated in the introduction, we selected a model to be our “best” model using sensitivity as the primary criterion, while also considering how accurate the model is overall. We did this by examining sensitivity and the balanced accuracy. Looking at the test dataset, we found that 89.6% of comments in our test dataset (1792 in total) were nontoxic, so there is an overrepresentation of nontoxic comments in our test dataset. Therefore, the balanced accuracy estimates the actual accuracy of the model if the dataset had equal proportions of toxic and nontoxic comments. We believe that this is a better estimate for the accuracy of our model. Ultimately, we chose the neural network as our “best” model, as it had the highest balanced accuracy (.6877) and an impressive sensitivity (.9955). It also had the highest specificity (.3798) of all of the models.
 
-## Final Thoughts
+## Discussion
 
 Our “best” model had an accuracy of 93.15% on our test dataset, which means that 93.15% of comments in our test dataset were correctly classified. The balanced accuracy was 68.77%, which means that if our test dataset had equal numbers of toxic and nontoxic comments, the model would make accurate predictions for about 69% of the comments. While this is not an ideal level accuracy, we believe that this number can be increased by adding more features to our model. We wanted to keep our model relatively simple and thus only included features that made the most sense for classifying a toxic or nontoxic comment, but had we included many more features (ex. 50 features), we imagine that our model would be able to perform better in all of the model diagnostics we used (accuracy, balanced accuracy, sensitivity, specificity). We are particularly happy with the fact that our final model had a sensitivity of 99.55%, which means it was able to correctly identify 99.55% of toxic comments as toxic. 
