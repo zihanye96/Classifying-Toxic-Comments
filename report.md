@@ -11,7 +11,7 @@ For this project, we used a dataset containing Wikipedia comments which have bee
  
 ### Feature Engineering
 
-Although the dataset contains varying levels of toxicity (toxic, severe toxic, obscene, threat, insult, and identity hate), we simplified the response variable by classifying a comment of any degree of toxicity as simply "Äútoxic"Äù. Furthermore, after examining the comments and thinking about common features of toxic and nontoxic comments, we decided to use the following 11 features in our classification model:
+Although the dataset contains varying levels of toxicity (toxic, severe toxic, obscene, threat, insult, and identity hate), we simplified the response variable by classifying a comment of any degree of toxicity as simply "toxic". Furthermore, after examining the comments and thinking about common features of toxic and nontoxic comments, we decided to use the following 11 features in our classification model:
 1. N: the length of a comment in number of characters
 2. PuncN: the number of punctuations used in a comment
 3. PropC: whether or not the proportion of capitalized letters in a comment was greater than 0.4.
